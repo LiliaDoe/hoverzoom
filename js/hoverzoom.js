@@ -593,7 +593,7 @@ var hoverZoom = {
                     position.left = wndScrollLeft + 0.5 * padding;
                 }
 
-                hz.hzViewer.css({top:Math.round(position.top), left:Math.round(position.left)});
+                hz.hzViewer.css({top:Math.round(position.top * 10) / 10, left:Math.round(position.left * 10) / 10});
             }
         }
 
