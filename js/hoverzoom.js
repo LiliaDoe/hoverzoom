@@ -420,7 +420,7 @@ var hoverZoom = {
 
                 // this is looped 10x max just in case something goes wrong, to avoid freezing the process
                 let i = 0;
-                while (!viewerLocked && hz.hzViewer.height() > wndHeight - padding - scrollStatusBarHeight && i++ < 10) {
+                while (!viewerLocked && hz.hzViewer.height() > wndHeight - scrollStatusBarHeight && i++ < 10) {
                     imgFullSize.height(wndHeight - padding - scrollStatusBarHeight - (hzAbove ? hzAboveHeight : 0) - (hzBelow ? hzBelowHeight : 0)).width('auto');
                 }
 
@@ -561,8 +561,8 @@ var hoverZoom = {
                 if (position.top > maxTop) {
                     position.top = maxTop;
                 }
-                if (position.top < wndScrollTop + fullZoomPadding) {
-                    position.top = wndScrollTop + fullZoomPadding;
+                if (position.top < wndScrollTop + padding) {
+                    position.top = wndScrollTop + padding;
                 }
 
                 if (options.ambilightEnabled) {
