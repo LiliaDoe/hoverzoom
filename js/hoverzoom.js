@@ -376,6 +376,7 @@ var hoverZoom = {
                 zoom = window.devicePixelRatio || 1.0,
                 scrollBarHeight = (!options.hScrollBarOverlap && hasScrollbarH() ? 17 / zoom : 0),
                 statusBarHeight = (!options.statusBarOverlap ? 30 / zoom : options.frameThickness * 2),
+                scrollStatusBarHeight = Math.max(scrollBarHeight, statusBarHeight),
                 scrollBarWidth = 17 / zoom,
                 wndWidth = innerWidth,
                 wndHeight = innerHeight,
@@ -407,8 +408,9 @@ var hoverZoom = {
                 // hides caption and details to fill window more with image when fullZoomKey is pressed
                 const fullZoomKey = fullZoomKeyDown;
                 const hideDetailsandCaptions = options.fullZoomHidesDetailsCaptions;
-                const hzAboveHeight = (fullZoomKey && hideDetailsandCaptions) ? padding : hzAbove.height();
-                const hzBelowHeight = (fullZoomKey && hideDetailsandCaptions) ? padding : hzBelow.height();
+                // adjustments made to fix height when details and captions are hidden
+                const hzAboveHeight = (fullZoomKey && hideDetailsandCaptions) ? hzAbove.height() * (padding / 20) : hzAbove.height() / (2 - (padding / 10));
+                const hzBelowHeight = (fullZoomKey && hideDetailsandCaptions) ? hzBelow.height() * (padding / 20) : hzBelow.height() / (2 - (padding / 10));
 
                 // needed so height adjusts properly when fullZoomKey is released
                 if (!fullZoomKey && hideDetailsandCaptions) {
@@ -418,9 +420,8 @@ var hoverZoom = {
 
                 // this is looped 10x max just in case something goes wrong, to avoid freezing the process
                 let i = 0;
-
-                while (!viewerLocked && hz.hzViewer.height() > wndHeight - statusBarHeight - scrollBarHeight && i++ < 10) {
-                    imgFullSize.height(wndHeight - padding - statusBarHeight - scrollBarHeight - (hzAbove ? hzAboveHeight : 0) - (hzBelow ? hzBelowHeight : 0)).width('auto');
+                while (!viewerLocked && hz.hzViewer.height() > wndHeight - padding - scrollStatusBarHeight && i++ < 10) {
+                    imgFullSize.height(wndHeight - padding - scrollStatusBarHeight - (hzAbove ? hzAboveHeight : 0) - (hzBelow ? hzBelowHeight : 0)).width('auto');
                 }
 
                 if (hzCaptionMiscellaneous) {
@@ -476,8 +477,11 @@ var hoverZoom = {
                 }
             }
 
-            if ($(hzAbove).height() == 0) hz.hzViewer.css({'padding-top':`${padding}px`});
-            if ($(hzBelow).height() == 0) hz.hzViewer.css({'padding-bottom':`${padding}px`});
+            const fullZoomKey = fullZoomKeyDown;
+            const hideDetailsandCaptions = options.fullZoomHidesDetailsCaptions;
+            const hzPadding = (padding > options.frameThickness || (fullZoomKey && hideDetailsandCaptions)) ? padding : options.frameThickness - 1
+            if ($(hzAbove).height() == 0) hz.hzViewer.css({'padding-top':`${hzPadding}px`});
+            if ($(hzBelow).height() == 0) hz.hzViewer.css({'padding-bottom':`${hzPadding}px`});
 
             if (displayOnRight) {
                 position.left += offset;
@@ -529,8 +533,8 @@ var hoverZoom = {
                 }
 
                 // height adjustment
-                if (!viewerLocked && hz.hzViewer.height() > wndHeight - padding - statusBarHeight - scrollBarHeight) {
-                    imgFullSize.height(wndHeight - padding - statusBarHeight - scrollBarHeight).width('auto');
+                if (!viewerLocked && hz.hzViewer.height() > wndHeight - padding - hzPadding - scrollStatusBarHeight) {
+                    imgFullSize.height(wndHeight - padding - hzPadding - scrollStatusBarHeight).width('auto');
                 }
 
                 adjustCaptionMiscellaneousDetails();
@@ -552,12 +556,13 @@ var hoverZoom = {
                 }
 
                 // vertical position adjustments
-                const maxTop = wndScrollTop + wndHeight - hz.hzViewer.height() - padding - statusBarHeight - scrollBarHeight;
+                const fullZoomPadding = (fullZoomKey ? Math.max(padding - 3.5, 0) : padding)
+                const maxTop = wndScrollTop + wndHeight - hz.hzViewer.height() - fullZoomPadding - scrollStatusBarHeight;
                 if (position.top > maxTop) {
                     position.top = maxTop;
                 }
-                if (position.top < wndScrollTop + padding) {
-                    position.top = wndScrollTop + padding;
+                if (position.top < wndScrollTop + fullZoomPadding) {
+                    position.top = wndScrollTop + fullZoomPadding;
                 }
 
                 if (options.ambilightEnabled) {
