@@ -409,8 +409,14 @@ var hoverZoom = {
                 const fullZoomKey = fullZoomKeyDown;
                 const hideDetailsandCaptions = options.fullZoomHidesDetailsCaptions;
                 // adjustments made to fix height when details and captions are hidden
-                const hzAboveHeight = (fullZoomKey && hideDetailsandCaptions || !hzAbove) ? hzAbove.height() * (padding / 20) : hzAbove.height() / (2 - (padding / 10));
-                const hzBelowHeight = (fullZoomKey && hideDetailsandCaptions || !hzBelow) ? hzBelow.height() * (padding / 20) : hzBelow.height() / (2 - (padding / 10));
+                let hzAboveHeight = 0;
+                let hzBelowHeight = 0;
+                if (hzAbove) {
+                    hzAboveHeight = (fullZoomKey && hideDetailsandCaptions) ? hzAbove.height() * (padding / 20) : hzAbove.height() / (2 - (padding / 10));
+                }
+                if (hzBelow) {
+                    hzBelowHeight = (fullZoomKey && hideDetailsandCaptions) ? hzBelow.height() * (padding / 20) : hzBelow.height() / (2 - (padding / 10));
+                }
 
                 // needed so height adjusts properly when fullZoomKey is released
                 if (!fullZoomKey && hideDetailsandCaptions) {
