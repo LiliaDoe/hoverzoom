@@ -13,10 +13,14 @@
         "128": "images/icon128.png"
     },
     "default_locale": "en",
-    "minimum_chrome_version": "22",
+    "minimum_chrome_version": "130",
     "background": {
         "persistent": true,
-        "scripts": ["js/libs/backgroundScriptsAPIBridge.js", "js/common.js", "js/background.js"]
+        "scripts": [
+            "js/tools.js",
+            "js/common.js",
+            "js/background.js"
+        ]
     },
     "options_ui": {
         "page": "html/options.html",
@@ -32,6 +36,7 @@
     },
     "permissions": [
         "*://*/*",
+        "storage",
         "unlimitedStorage"
     ],
     "optional_permissions": [
@@ -44,18 +49,16 @@
     "web_accessible_resources": [
         "images/loading.gif",
         "images/spectrogram.png",
-        "js/libs/gumby.js",
-        "js/libs/jquery-3.2.1.js",
-        "js/libs/jquery.mobile.custom.js",
-        "js/libs/modernizr-2.7.1.js",
+        "js/jquery-3.7.1.js",
+        "js/gumby.js",
+        "js/tools.js",
         "js/common.js",
         "js/options.js"
     ],
     "content_scripts": [
         {
             "js": [
-                "js/libs/jquery-3.2.1.js",
-                "js/libs/contentScriptsAPIBridge.js",
+                "js/jquery-3.7.1.js",
                 "js/tools.js",
                 "js/plugins.js",
                 "plugins/default.js",
@@ -2111,7 +2114,7 @@
         },
         {
             "js": ["plugins/apple.js"],
-            "matches": ["*://apps.apple.com/*", "*://books.apple.com/*", "*://music.apple.com/*", "*://podcasts.apple.com/*"]
+            "matches": ["*://apps.apple.com/*", "*://books.apple.com/*", "*://music.apple.com/*"]
         },
         {
             "js": ["plugins/monuments_nationaux.js"],
