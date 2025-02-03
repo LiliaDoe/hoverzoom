@@ -412,10 +412,10 @@ var hoverZoom = {
                 let hzAboveHeight = 0;
                 let hzBelowHeight = 0;
                 if (hzAbove) {
-                    hzAboveHeight = (fullZoomKey && hideDetailsandCaptions) ? hzAbove.height() * (padding / 20) : hzAbove.height() / (2 - (padding / 10));
+                    hzAboveHeight = (fullZoomKey && hideDetailsandCaptions) ? hzAbove.height() * (padding / offset) : hzAbove.height() / (2 - (padding / offset * 0.5));
                 }
                 if (hzBelow) {
-                    hzBelowHeight = (fullZoomKey && hideDetailsandCaptions) ? hzBelow.height() * (padding / 20) : hzBelow.height() / (2 - (padding / 10));
+                    hzBelowHeight = (fullZoomKey && hideDetailsandCaptions) ? hzBelow.height() * (padding / offset) : hzBelow.height() / (2 - (padding / offset * 0.5));
                 }
 
                 // needed so height adjusts properly when fullZoomKey is released
