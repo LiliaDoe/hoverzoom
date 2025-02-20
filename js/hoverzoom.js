@@ -1304,7 +1304,7 @@ var hoverZoom = {
                 restoreTitles();
                 preventDefaultMouseAction(false);
                 return;
-            } else if (event.button === 0) { // We don't need left click
+            } else if (event.button !== 1 || event.button !== 2) { // We only want right and middle click
                 return;
             }
 
@@ -1387,7 +1387,7 @@ var hoverZoom = {
         }
 
         function documentMouseUp(event) {
-            if (event.button === 0) return; // If left click, return
+            if (event.button !== 1 || event.button !== 2) return; // If not right or middle click, return
             // -2 or -4 is middle click, -1 or -3 is right click
             const rightButtonKey = ((shortPressRight || !options.rightShortClickAndHold) && options.rightShortClick) ? -3 : -1;
             const middleButtonKey = ((shortPressMiddle || !options.middleShortClickAndHold) && options.middleShortClick) ? -4 : -2;
@@ -1538,7 +1538,7 @@ var hoverZoom = {
                     var src = (srcDetails.audioUrl ? srcDetails.audioUrl : srcDetails.url).replace('.audio', '');
 
                     // audio controls are displayed on top of an image provided by extension: 'images/spectrogram.png'
-                    srcDetails.url = chrome.extension.getURL('images/spectrogram.png');
+                    srcDetails.url = chrome.runtime.getURL('images/spectrogram.png');
                     srcDetails.audioUrl = src;
 
                     imgFullSize = $('<img style="border: none" />').appendTo(hz.hzViewer).attr('src', srcDetails.url).addClass('hzPlaceholder');
@@ -3160,7 +3160,7 @@ var hoverZoom = {
                 let body = '<body/>';
                 body = $(body);
                 body[0].style.margin = 0;
-                body[0].style.backgroundImage = 'url(' + chrome.extension.getURL('images/spectrogram.png') + ')';
+                body[0].style.backgroundImage = 'url(' + chrome.runtime.getURL('images/spectrogram.png') + ')';
 
                 let audio = '<audio/>';
                 audio = $(audio);
@@ -3170,7 +3170,7 @@ var hoverZoom = {
                 audio.css(audioControlsCss);
                 body.append(audio);
 
-                let imgDim = hz.getImageDimensions(chrome.extension.getURL('images/spectrogram.png'));
+                let imgDim = hz.getImageDimensions(chrome.runtime.getURL('images/spectrogram.png'));
                 let createDataWidth = imgDim.width + popupBorder.width;
                 let createDataHeight = imgDim.height + popupBorder.height;
 
@@ -4163,7 +4163,7 @@ var hoverZoom = {
 
         // check that loader exists
         if (hoverZoom.hzLoader == null) {
-            hoverZoom.hzLoader = $('<div id="hzLoader"><img src="' + chrome.extension.getURL('images/loading.gif') + '" style="opacity: 0.8; padding: 0; margin: 0" /></div>');
+            hoverZoom.hzLoader = $('<div id="hzLoader"><img src="' + chrome.runtime.getURL('images/loading.gif') + '" style="opacity: 0.8; padding: 0; margin: 0" /></div>');
             hoverZoom.hzLoader.width('auto').height('auto');
             hoverZoom.hzLoader.css(hoverZoom.hzLoaderCss);
             if (position) hoverZoom.hzLoader.css({top:position.top, left:position.left});
