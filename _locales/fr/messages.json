@@ -543,14 +543,6 @@
         "message": "Ajouter les images regardées à l'historique",
         "description": "[options] Add viewed pictures to the browser's history option"
     },
-    "optAllowHeadersRewriteTooltip": {
-        "message": "Il est utile de pouvoir zoomer et lire le contenu d'un site sur un autre site, par exemple des vidéos.",
-        "description": "[options] Tooltip for allow rewrite of headers for HTTP(S) request or response option"
-    },
-    "optAllowHeadersRewrite": {
-        "message": "Autoriser la réécriture d'en-têtes pour les requêtes ou les réponses HTTP(S)",
-        "description": "[options] Allow rewrite of headers for HTTP(S) request or response option"
-    },
     "optFilterNSFW": {
         "message": "Exclure les images adultes ou choquantes (sur reddit uniquement)",
         "description": "[options] Exclude NSFW images (Reddit only) option"
@@ -592,7 +584,7 @@
         "description": "[options] Tooltip for details selector"
     },
     "optTitleBoxDetails": {
-        "message": "Detail(s) to show:",
+        "message": "Detail(s) shown:",
         "description": "[options] Title for details selector"
     },
     "optShowDetailHost": {
@@ -612,7 +604,7 @@
         "description": "[options] Show Extension Detail"
     },
     "optShowDetailContentLength": {
-        "message": "Media Length",
+        "message": "Content Length",
         "description": "[options] Show Content Length Detail"
     },
     "optShowDetailDuration": {
@@ -1053,6 +1045,14 @@
     },
     "optFlipImageKeyDescription": {
         "message": "Appuyer sur cette touche pour retourner alternativement l'image verticalement et horizontalement. Pratique pour lire des textes et des logos dans des images ou des vidéos en miroir.",
+        "description": "[options] Action key description"
+    },
+    "optrotateImageKeyTitle": {
+        "message": "Rotate image",
+        "description": "[options] Action key title"
+    },
+    "optrotateImageKeyDescription": {
+        "message": "Press this key to rotate image.",
         "description": "[options] Action key description"
     },
     "optFooterSourceCode": {

@@ -543,14 +543,6 @@
         "message": "閲覧した画像をブラウザの履歴に追加する",
         "description": "[options] Add viewed pictures to the browser's history option"
     },
-    "optAllowHeadersRewriteTooltip": {
-        "message": "動画など、あるサイトのコンテンツを別のサイトで拡大・再生できるのは便利です。",
-        "description": "[options] Tooltip for allow rewrite of headers for HTTP(S) request or response option"
-    },
-    "optAllowHeadersRewrite": {
-        "message": "HTTP(S)のリクエストやレスポンスのヘッダを書き換えることを許可する",
-        "description": "[options] Allow rewrite of headers for HTTP(S) request or response option"
-    },
     "optFilterNSFW": {
         "message": "NSFW画像を除外する（Redditのみ）",
         "description": "[options] Exclude NSFW images (Reddit only) option"
@@ -592,7 +584,7 @@
         "description": "[options] Tooltip for details selector"
     },
     "optTitleBoxDetails": {
-        "message": "Detail(s) to show:",
+        "message": "Detail(s) shown:",
         "description": "[options] Title for details selector"
     },
     "optShowDetailHost": {
@@ -612,7 +604,7 @@
         "description": "[options] Show Extension Detail"
     },
     "optShowDetailContentLength": {
-        "message": "Media Length",
+        "message": "Content Length",
         "description": "[options] Show Content Length Detail"
     },
     "optShowDetailDuration": {
@@ -1053,6 +1045,14 @@
     },
     "optFlipImageKeyDescription": {
         "message": "このキーを押すと、画像が縦と横に交互に反転します。ミラーリングされた画像や動画内のテキストやロゴを読むのに便利です。",
+        "description": "[options] Action key description"
+    },
+    "optrotateImageKeyTitle": {
+        "message": "Rotate image",
+        "description": "[options] Action key title"
+    },
+    "optrotateImageKeyDescription": {
+        "message": "Press this key to rotate image.",
         "description": "[options] Action key description"
     },
     "optFooterSourceCode": {

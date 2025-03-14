@@ -17,7 +17,6 @@ const factorySettings = {
     galleriesMouseWheel: true,
     disableMouseWheelForVideo: false,
     addToHistory: false,
-    allowHeadersRewrite: false,
     alwaysPreload: false,
     displayDelay: 100,
     displayDelayVideo: 500,
@@ -96,6 +95,7 @@ const factorySettings = {
     prevImgKey: 37,
     nextImgKey: 39,
     flipImageKey: 70,
+    rotateImageKey: 82,
     closeKey: 27,
     debug: false
 }
@@ -122,9 +122,15 @@ function sendOptions(options) {
     // Send options to all tabs
     chrome.windows.getAll(null, function (windows) {
         for (var i = 0; i < windows.length; i++) {
-            chrome.tabs.query({windowId: windows[i].id}, function (tabs) {
+            chrome.tabs.query({active: true, windowId: windows[i].id}, function (tabs) {
                 for (var j = 0; j < tabs.length; j++) {
-                    chrome.tabs.sendMessage(tabs[j].id, request);
+                    const tab = tabs[j];
+                    if (tab.url && (tab.url.startsWith('http://') || tab.url.startsWith('https://'))) {
+                        chrome.tabs.sendMessage(tab.id, request, function(response) {
+                            // Ignore errors that occur when the receiving end doesn't exist
+                            let lastError = chrome.runtime.lastError;
+                        });
+                    }
                 }
             });
         }

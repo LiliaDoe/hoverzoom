@@ -1238,6 +1238,10 @@ var hoverZoom = {
                 case options.flipImageKey:
                     flipImage();
                     return false;
+                // "Rotate image" key
+                case options.rotateImageKey:
+                    rotateImage();
+                    return false;
                 case options.openImageInWindowKey:
                     if (srcDetails.video) openVideoInWindow();
                     else if (srcDetails.audio) openAudioInWindow();
@@ -1329,6 +1333,7 @@ var hoverZoom = {
                             case options.copyImageKey:
                             case options.copyImageUrlKey:
                             case options.flipImageKey:
+                            case options.rotateImageKey:
                             case options.openImageInWindowKey:
                             case options.openImageInTabKey:
                             case options.saveImageKey:
@@ -1348,6 +1353,7 @@ var hoverZoom = {
                     case options.copyImageKey:
                     case options.copyImageUrlKey:
                     case options.flipImageKey:
+                    case options.rotateImageKey:
                     case options.openImageInWindowKey:
                     case options.openImageInTabKey:
                     case options.saveImageKey:
@@ -2198,8 +2204,6 @@ var hoverZoom = {
 
         function srcFullSizeOnError(e) {
 
-            var tryAgainWithCustomHeaders = options.allowHeadersRewrite;
-
             if (srcDetails.url === $(this).prop('src') || srcDetails.url === unescape($(this).prop('src'))) {
                 let hoverZoomSrcIndex = hz.currentLink ? (hz.currentLink.data().hoverZoomSrcIndex || 0) : 0;
 
@@ -2215,13 +2219,6 @@ var hoverZoom = {
                         hz.currentLink.data().hoverZoomGalleryIndex = 0;
                         hz.currentLink.data().hoverZoomSrc = hz.currentLink.data().hoverZoomGallerySrc[0];
                     }
-                } else if (tryAgainWithCustomHeaders && hz.currentLink && hz.currentLink.data().tryAgainWithCustomHeadersUrl != srcDetails.url) {
-                    // try again to load image using custom HTTP(S) headers for request and/or response
-                    console.info('[HoverZoom] Failed to load source: ' + srcDetails.url + '\nTrying again with custom headers...');
-                    hz.currentLink.data().tryAgainWithCustomHeadersUrl = srcDetails.url;
-                    var url = srcDetails.url.replaceAll(' ', '%20');
-                    var referer = hz.currentLink.data().hoverZoomCustomReferer || url;
-                    loadWithCustomHeaders(url, referer, function() { clearTimeout(loadFullSizeImageTimeout); loadFullSizeImageTimeout = setTimeout(loadFullSizeImage, 100); });
                 } else if (hz.currentLink && hoverZoomSrcIndex < hz.currentLink.data().hoverZoomSrc.length - 1) {
                     // if the link has several possible sources, try to load the next one
                     hoverZoomSrcIndex++;
@@ -2247,28 +2244,6 @@ var hoverZoom = {
                     }
                 }
             }
-        }
-
-        // rewrite HTTP(S) headers for url in parameter:
-        // - request:  "referer" = referer
-        // - response:  "Access-Control-Allow-Origin" = "*"
-        // then try to load url through callback
-        function loadWithCustomHeaders(url, referer, callback) {
-            // to deal with redirections: do not use full url for matching but only pathname + search
-            try {
-                const newUrl = new URL(url);
-                url = newUrl.pathname + newUrl.search;
-            } catch {}
-            chrome.runtime.sendMessage({action:"storeHeaderSettings",
-                                                plugin:"custom",
-                                                settings:
-                                                    [{"type":"request",
-                                                    "urls":[url],
-                                                    "headers":[{"name":"referer", "value":referer, "typeOfUpdate":"add"}]},
-                                                    {"type":"response",
-                                                    "urls":[url],
-                                                    "headers":[{"name":"Access-Control-Allow-Origin", "value":"*", "typeOfUpdate":"add"}]}]
-                                                }, callback());
         }
 
         function hideCursor() {
@@ -2639,12 +2614,10 @@ var hoverZoom = {
         }
 
         function loadOptions() {
-            chrome.runtime.sendMessage({action:'getOptions'}, function (result) {
+            optionsStorageGet(factorySettings).then((result) => {
                 options = result;
-                if (options) {
-                    applyOptions();
-                }
-            });
+                applyOptions();
+            })
         }
 
         // get list of banned image, video or audio track urls
@@ -2812,17 +2785,15 @@ var hoverZoom = {
                 zoomFactorFit = width / srcDetails.naturalWidth;
                 lockViewer();
             }
-            else {
-                if (zoomFactor > 1.1 * zoomFactorFit || zoomFactor < 0.9 * zoomFactorFit) {
-                    // restore zoom factor such as img or video fits screen size
-                    zoomFactor = zoomFactorFit || parseInt(options.zoomFactor);
-                } else {
-                    // zoom factor = default
-                    zoomFactor = parseInt(options.zoomFactor);
-                }
-                posViewer();
-                panLockedViewer(event);
+            if (zoomFactor > 1.1 * zoomFactorFit || zoomFactor < 0.9 * zoomFactorFit) {
+                // restore zoom factor such as img or video fits screen size
+                zoomFactor = zoomFactorFit || parseInt(options.zoomFactor);
+            } else {
+                // zoom factor = default
+                zoomFactor = parseInt(options.zoomFactor);
             }
+            posViewer();
+            panLockedViewer(event);
         }
 
         function documentOnKeyDown(event) {
@@ -2951,6 +2922,11 @@ var hoverZoom = {
                 // "Flip image" key
                 if (keyCode === options.flipImageKey) {
                     flipImage();
+                    return false;
+                }
+                // "Rotate image" key
+                if (keyCode === options.rotateImageKey) {
+                    rotateImage();
                     return false;
                 }
                 // "+" key is pressed
@@ -3418,19 +3394,17 @@ var hoverZoom = {
 
         // extract content-Length & Last-Modified values from headers
         function parseHeaders(headers) {
-            headers = String(headers); //convert to string for .match
             let infos = {}
-            let contentLength = headers.match(/content-length:(.*)/i);
+            let contentLength = headers["content-length"];
             if (contentLength) {
-                contentLength = contentLength[1].trim();
                 if (!isNaN(contentLength) && contentLength > 0) {
                     contentLength /= 1024;
                     if (contentLength < 1000) infos.contentLength = (contentLength).toFixed(0) + ' KB';
                     else infos.contentLength = (contentLength / 1024).toFixed(1) + ' MB';
                 }
             }
-            let lastModified = headers.match(/last-modified:(.*)/i);
-            if (lastModified && lastModified[1].indexOf('01 Jan 1970') === -1) infos.lastModified = lastModified[1].trim();
+            let lastModified = headers["last-modified"];
+            if (lastModified && lastModified.indexOf('01 Jan 1970') === -1) infos.lastModified = lastModified;
             return infos;
         }
 
@@ -3638,6 +3612,27 @@ var hoverZoom = {
                 $('#hzContainer').addClass(flip);
                 addTimestampTrack(imgFullSize[0]);
             }
+        }
+
+        // rotates image 90 degrees clockwise. It does not update image border
+        function rotateImage() {
+            if (!imgFullSize) return;
+
+            if (imgFullSize.css('transform') == 'none' && hz.hzViewer.css('transform') == 'none') {
+                imgFullSize.css('transform', 'none');
+                hz.hzViewer.css('transform', 'matrix(0, 1, -1, 0, 0, 0)');
+            } else if (imgFullSize.css('transform') == 'none' && hz.hzViewer.css('transform') == 'matrix(0, 1, -1, 0, 0, 0)') {
+                imgFullSize.css('transform', 'matrix(-1, 0, 0, -1, 0, 0)');
+                hz.hzViewer.css('transform', 'none');
+            } else if (imgFullSize.css('transform') == 'matrix(-1, 0, 0, -1, 0, 0)' && hz.hzViewer.css('transform') == 'none') {
+                imgFullSize.css('transform', 'matrix(-1, 0, 0, -1, 0, 0)');
+                hz.hzViewer.css('transform', 'matrix(0, 1, -1, 0, 0, 0)');
+            } else {
+                imgFullSize.css('transform', 'none');
+                hz.hzViewer.css('transform', 'none');
+            }
+            if (options.ambilightEnabled)
+                updateAmbilight();
         }
 
         // store url(s) of image, video or audio track that should not be zoomed again

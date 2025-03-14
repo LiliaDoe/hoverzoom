@@ -543,14 +543,6 @@
         "message": "تصاویر دیده شده به تاریخچه مرورگر اضافه شود",
         "description": "[options] Add viewed pictures to the browser's history option"
     },
-    "optAllowHeadersRewriteTooltip": {
-        "message": "Useful to be able to zoom & play content from one site on another site, such as videos",
-        "description": "[options] Tooltip for allow rewrite of headers for HTTP(S) request or response option"
-    },
-    "optAllowHeadersRewrite": {
-        "message": "Allow rewrite of headers for HTTP(S) request or response",
-        "description": "[options] Allow rewrite of headers for HTTP(S) request or response option"
-    },
     "optFilterNSFW": {
         "message": "حذف تصاویر گفتگو آزاد (ق)",
         "description": "[options] Exclude NSFW images (Reddit only) option"
@@ -592,7 +584,7 @@
         "description": "[options] Tooltip for details selector"
     },
     "optTitleBoxDetails": {
-        "message": "Detail(s) to show:",
+        "message": "Detail(s) shown:",
         "description": "[options] Title for details selector"
     },
     "optShowDetailHost": {
@@ -612,7 +604,7 @@
         "description": "[options] Show Extension Detail"
     },
     "optShowDetailContentLength": {
-        "message": "Media Length",
+        "message": "Content Length",
         "description": "[options] Show Content Length Detail"
     },
     "optShowDetailDuration": {
@@ -1053,6 +1045,14 @@
     },
     "optFlipImageKeyDescription": {
         "message": "Press this key to alternately flip image vertically and horizontally. Handy for reading texts & logos in mirrored images or videos.",
+        "description": "[options] Action key description"
+    },
+    "optrotateImageKeyTitle": {
+        "message": "Rotate image",
+        "description": "[options] Action key title"
+    },
+    "optrotateImageKeyDescription": {
+        "message": "Press this key to rotate image.",
         "description": "[options] Action key description"
     },
     "optFooterSourceCode": {
