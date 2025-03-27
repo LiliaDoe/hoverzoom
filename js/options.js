@@ -40,6 +40,8 @@ async function saveOptions(exportSettings = false) {
     options.audioVolume = $('#txtAudioVolume')[0].value / 100;
     options.mouseClickHoldTime = $('#txtMouseClickHoldTime')[0].value;
     options.mouseUnderlap = $('#chkMouseUnderlap')[0].checked;
+    options.lockImageZoomFactorEnabled = $('#chkLockImageZoomFactorEnabled')[0].checked;
+    options.lockImageZoomDefaultEnabled = $('#chkLockImageZoomDefaultEnabled')[0].checked;
     options.pageActionEnabled = $('#chkPageActionEnabled')[0].checked;
     options.showWhileLoading = $('#chkShowWhileLoading')[0].checked;
     options.showHighRes = $('#chkShowHighRes')[0].checked;
@@ -50,6 +52,8 @@ async function saveOptions(exportSettings = false) {
     options.fadeDuration = getMilliseconds($('#txtFadeDuration'));
     options.hideMouseCursor = $('#chkHideMouseCursor')[0].checked;
     options.hideMouseCursorDelay = getMilliseconds($('#txtHideMouseCursor'));
+    options.viewerShadowEnabled = $('#chkViewerShadowEnabled')[0].checked;
+    options.captionDetailShadowEnabled = $('#chkCaptionDetailShadowEnabled')[0].checked;
     options.ambilightEnabled = $('#chkAmbilightEnabled')[0].checked;
     options.ambilightHaloSize = $('#txtAmbilightHaloSize')[0].value / 100;
     options.ambilightBackgroundOpacity = $('#txtAmbilightBackgroundOpacity')[0].value / 100;
@@ -128,10 +132,13 @@ async function saveOptions(exportSettings = false) {
     options.fontSize = $('#txtFontSize')[0].value;
     options.fontOutline = $('#chkFontOutline')[0].checked;
     options.belowPositionOffset = $('#txtBelowPositionOffset')[0].value;
+    options.belowPositionOffsetUnit = $('#selectBelowUnitType').val();
     options.abovePositionOffset = $('#txtAbovePositionOffset')[0].value;
+    options.abovePositionOffsetUnit = $('#selectAboveUnitType').val();
     options.captionOpacity = $('#txtCaptionOpacity')[0].value / 100;
     options.detailsOpacity = $('#txtDetailsOpacity')[0].value / 100;
     options.displayImageLoader = $('#chkDisplayImageLoader')[0].checked;
+    options.useClipboardNameWhenSaving = $('#chkUseClipboardNameWhenSaving')[0].checked;
     options.downloadFolder = $('#txtDownloadFolder')[0].value;
     options.addDownloadOrigin = $('#chkAddDownloadOrigin')[0].checked;
     options.addDownloadSize = $('#chkAddDownloadSize')[0].checked;
@@ -185,6 +192,8 @@ async function restoreOptions(optionsFromFactorySettings) {
     $('#rngMouseClickHoldTime').val(parseInt(options.mouseClickHoldTime));
     $('#txtMouseClickHoldTime').val(parseInt(options.mouseClickHoldTime));
     $('#chkMouseUnderlap').trigger(options.mouseUnderlap ? 'gumby.check' : 'gumby.uncheck');
+    $('#chkLockImageZoomFactorEnabled').trigger(options.lockImageZoomFactorEnabled ? 'gumby.check' : 'gumby.uncheck');
+    $('#chkLockImageZoomDefaultEnabled').trigger(options.lockImageZoomDefaultEnabled ? 'gumby.check' : 'gumby.uncheck');
     $('#chkPageActionEnabled').trigger(options.pageActionEnabled ? 'gumby.check' : 'gumby.uncheck');
     $('#chkShowWhileLoading').trigger(options.showWhileLoading ? 'gumby.check' : 'gumby.uncheck');
     $('#chkShowHighRes').trigger(options.showHighRes ? 'gumby.check' : 'gumby.uncheck');
@@ -195,6 +204,8 @@ async function restoreOptions(optionsFromFactorySettings) {
     $('#txtFadeDuration').val((options.fadeDuration || 0) / 1000);
     $('#chkHideMouseCursor').trigger(options.hideMouseCursor ? 'gumby.check' : 'gumby.uncheck');
     $('#txtHideMouseCursor').val((options.hideMouseCursorDelay || 0) / 1000);
+    $('#chkViewerShadowEnabled').trigger(options.viewerShadowEnabled ? 'gumby.check' : 'gumby.uncheck');
+    $('#chkCaptionDetailShadowEnabled').trigger(options.captionDetailShadowEnabled ? 'gumby.check' : 'gumby.uncheck');
     $('#chkAmbilightEnabled').trigger(options.ambilightEnabled ? 'gumby.check' : 'gumby.uncheck');
     $('#rngAmbilightHaloSize').val(parseInt(options.ambilightHaloSize * 100));
     $('#txtAmbilightHaloSize').val(parseInt(options.ambilightHaloSize * 100));
@@ -216,7 +227,9 @@ async function restoreOptions(optionsFromFactorySettings) {
     $('#rngImagePaddingSize').val(parseInt(options.imagePaddingSize));
     $('#txtImagePaddingSize').val(parseInt(options.imagePaddingSize));
     $('#txtBelowPositionOffset').val(parseFloat(options.belowPositionOffset));
+    $('#selectBelowUnitType').val(options.belowPositionOffsetUnit);
     $('#txtAbovePositionOffset').val(parseFloat(options.abovePositionOffset));
+    $('#selectAboveUnitType').val(options.abovePositionOffsetUnit);
     $('#txtCaptionOpacity').val(parseInt(options.captionOpacity * 100));
     $('#txtDetailsOpacity').val(parseInt(options.detailsOpacity * 100));
 
@@ -297,6 +310,7 @@ async function restoreOptions(optionsFromFactorySettings) {
     $('#chkEnableGalleries').trigger(options.enableGalleries ? 'gumby.check' : 'gumby.uncheck');
     $('#chkEnableNoFocusMsg').trigger(options.enableNoFocusMsg ? 'gumby.check' : 'gumby.uncheck');
     $('#txtPicturesOpacity').val(parseInt(options.picturesOpacity * 100));
+    $('#chkUseClipboardNameWhenSaving').trigger(options.useClipboardNameWhenSaving ? 'gumby.check' : 'gumby.uncheck');
     $('#chkDisplayImageLoader').trigger(options.displayImageLoader ? 'gumby.check' : 'gumby.uncheck');
     $('#chkEnlargementThresholdEnabled').trigger(options.enlargementThresholdEnabled ? 'gumby.check' : 'gumby.uncheck');
     $('#selectEnlargementThreshold').val(options.enlargementThreshold);

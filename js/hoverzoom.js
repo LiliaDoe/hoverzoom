@@ -441,15 +441,23 @@ var hoverZoom = {
                 }
                 if (hzAbove) {
                     hzAbove.css('max-width', imgFullSize[0].clientWidth);
-                    hzAbove.css('top', options.abovePositionOffset + '%');
-                    if (options.abovePositionOffset != 0)
-                        hzAbove.css('position', 'absolute');
+                    if (options.abovePositionOffsetUnit === 'percent') {
+                        hzAbove.css('top', options.abovePositionOffset + '%');
+                        if (options.abovePositionOffset != 0)
+                            hzAbove.css('position', 'absolute');
+                    } else {
+                        hzAbove.css('margin-bottom', options.abovePositionOffset + 'px');
+                    }
                 }
                 if (hzBelow) {
                     hzBelow.css('max-width', imgFullSize[0].clientWidth);
-                    hzBelow.css('bottom', options.belowPositionOffset + '%');
-                    if (options.belowPositionOffset != 0)
-                        hzBelow.css('position', 'absolute');
+                    if (options.belowPositionOffsetUnit === 'percent') {
+                        hzBelow.css('bottom', options.belowPositionOffset + '%');
+                        if (options.belowPositionOffset != 0)
+                            hzBelow.css('position', 'absolute');
+                    } else {
+                        hzBelow.css('margin-top', options.belowPositionOffset + 'px');
+                    }
                 }
 
                 // do not display caption nor details if img is too small, or if full zoom key is pressed when hideDetailsandCaptions is true
@@ -1938,10 +1946,6 @@ var hoverZoom = {
         function displayFullSizeImage() {
             cLog('displayFullSizeImage');
 
-            // if autoLockImages option is checked
-            if (options.autoLockImages)
-                viewerLocked = true;
-
             // check focus
             let focus = document.hasFocus();
 
@@ -1952,6 +1956,8 @@ var hoverZoom = {
             hz.hzViewer.empty();
 
             hz.hzViewer.css('visibility', 'visible');
+            if (!options.viewerShadowEnabled)
+                imgFullSizeCss.boxShadow = 'none';
 
             if (options.ambilightEnabled) {
 
@@ -2092,8 +2098,29 @@ var hoverZoom = {
                 hz.hzViewer.hide().fadeTo(options.fadeDuration, options.picturesOpacity);
             }
 
-            // The image size is not yet available in the onload so I have to delay the positioning
-            setTimeout(posViewer, options.showWhileLoading ? 0 : 10);
+            // The image size is not yet available in the onload so I have to delay the positioning 
+            setTimeout(() => {
+                posViewer();
+                if (options.autoLockImages) {
+                    const zoomFactorDefault = parseInt(options.zoomFactor);
+                    const useZoomFactor = options.lockImageZoomFactorEnabled;
+                    const zoomDefaultEnabled = options.lockImageZoomDefaultEnabled;
+                    let width = imgFullSize.width() || imgFullSize[0].width;
+                    zoomFactorFit = width / srcDetails.naturalWidth;
+
+                    if (zoomDefaultEnabled) {
+                        zoomFactor = useZoomFactor ? zoomFactorDefault : 1;
+                    } else {
+                        zoomFactor = zoomFactorFit;
+                    }
+                    viewerLocked = true;
+                    // Allow clicking on locked image.
+                    hz.hzViewer.css('pointer-events', 'auto');
+
+                    // Recheck image size to fix image zoom and position
+                    posViewer();
+                };
+            }, options.showWhileLoading ? 0 : 10)
 
             if (options.addToHistory && !chrome.extension.inIncognitoContext) {
                 chrome.runtime.sendMessage({action:'addUrlToHistory', url:srcDetails.url});
@@ -2119,7 +2146,12 @@ var hoverZoom = {
             let caption = linkData.hoverZoomCaption;
             let miscellaneous = getTextSelected();
 
-            if (caption || miscellaneous) {
+            if (!options.captionDetailShadowEnabled) { //Toggles caption and detail box shadow off if option is disabled
+                hzCaptionCss.boxShadow = 'none';
+                hzMiscellaneousCss.boxShadow = 'none';
+                hzDetailCss.boxShadow = 'none';
+            }
+            if (caption || miscellaneous) { 
                 if (options.captionLocation === "above")
                     if (hzAbove.find('#hzCaptionMiscellaneous').length == 0)
                         hzCaptionMiscellaneous = $('<div/>', {id:'hzCaptionMiscellaneous'}).css(hzCaptionMiscellaneousCss).appendTo(hzAbove);
@@ -2780,20 +2812,30 @@ var hoverZoom = {
         }
 
         function lockImageKey(event) {
+            const zoomFactorDefault = parseInt(options.zoomFactor);
+            const useZoomFactor = options.lockImageZoomFactorEnabled;
             if (!viewerLocked) {
+                const zoomDefaultEnabled = options.lockImageZoomDefaultEnabled;
+
                 let width = imgFullSize.width() || imgFullSize[0].width;
                 zoomFactorFit = width / srcDetails.naturalWidth;
+                if (zoomDefaultEnabled) {
+                    zoomFactor = useZoomFactor ? zoomFactorDefault : 1;
+                } else {
+                    zoomFactor = zoomFactorFit;
+                }
                 lockViewer();
             }
-            if (zoomFactor > 1.1 * zoomFactorFit || zoomFactor < 0.9 * zoomFactorFit) {
-                // restore zoom factor such as img or video fits screen size
-                zoomFactor = zoomFactorFit || parseInt(options.zoomFactor);
-            } else {
-                // zoom factor = default
-                zoomFactor = parseInt(options.zoomFactor);
+            else {
+                if (zoomFactor !== zoomFactorFit) {
+                    zoomFactor = zoomFactorFit || zoomFactorDefault; // Makes image fits within screen
+                } else {
+                    zoomFactor = useZoomFactor ? zoomFactorDefault : 1; // Makes image zoom to default or 100%
+                }
+                
+                posViewer();
+                panLockedViewer(event);
             }
-            posViewer();
-            panLockedViewer(event);
         }
 
         function documentOnKeyDown(event) {
@@ -2868,7 +2910,7 @@ var hoverZoom = {
             // ban key (close zoomed image + add to page's ban list) is pressed down
             // => zoomed image is closed immediately
             // => zoomed image url is added to page's ban list
-            if (event.which == options.banKey) {
+            if (event.which === options.banKey) {
                 hz.hzViewerLocked = viewerLocked = false;
                 if (hz.hzViewer) {
                     stopMedias();
@@ -3427,6 +3469,9 @@ var hoverZoom = {
                 filename = downloadFolder + filename;
                 cLog('filename: ' + filename);
             }
+
+            if (options.useClipboardNameWhenSaving)
+                filename = navigator.clipboard.readText(); // Copy the clipboard to the filename
 
             // pixiv.net: use "blob" workaround as regular download always fails
             if (url.indexOf('//i.pximg.net/') !== -1) {

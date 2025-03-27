@@ -12,6 +12,8 @@ const factorySettings = {
     playAudio: false,
     audioVolume: 0.25,
     mouseClickHoldTime: 250,
+    lockImageZoomFactorEnabled: true,
+    lockImageZoomDefaultEnabled: false,
     pageActionEnabled: true,
     showHighRes: true,
     galleriesMouseWheel: true,
@@ -31,6 +33,8 @@ const factorySettings = {
     filterNSFW: false,
     enableGalleries: true,
     enableNoFocusMsg: false,
+    viewerShadowEnabled: true,
+    captionDetailShadowEnabled: true,
     ambilightEnabled: false,
     ambilightHaloSize: 0.1,
     ambilightBackgroundOpacity: 0.9,
@@ -44,9 +48,12 @@ const factorySettings = {
     frameBackgroundColor: "#ffffff",
     frameThickness: 4,
     belowPositionOffset: 0,
+    belowPositionOffsetUnit: 'percent',
     abovePositionOffset: 0,
+    abovePositionOffsetUnit: 'percent',
     captionOpacity: 1,
     detailsOpacity: 1,
+    useClipboardNameWhenSaving: false,
     displayImageLoader: false,
     enlargementThresholdEnabled: true,
     enlargementThreshold: 2,
@@ -197,6 +204,7 @@ function loadKeys(sel) {
     for (var i = 65; i < 91; i++) {
         $('<option value="' + i + '">&#' + i + ';</option>').appendTo(sel);
     }
+    $('<option value="220">\\</option>').appendTo(sel);
     for (var i = 112; i < 124; i++) {
         $('<option value="' + i + '">F' + (i - 111) + '</option>').appendTo(sel);
     }
